@@ -8,4 +8,6 @@
 # Visual Studio cache directory
 .vs/
 
+bin/*
 
+.user
