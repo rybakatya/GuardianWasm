@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "GuardianWasm",
   "resources": {
-    "hash": "sha256-+mRJq6Uugspapk4jpwglIYxI1A/efW8Yt78cFSYQT5g=",
+    "hash": "sha256-DXCHBq2SLdR2mFOaKI5DFpPD+YozoJGyN8EfS7rtY8E=",
     "jsModuleNative": {
       "dotnet.native.8.0.11.o0m429tqzi.js": "sha256-ERqvs7Aj650n1Ydca90IMfnkPzusC7/hWWMjmGRL3ME="
     },
@@ -17,7 +17,7 @@
       "icudt_no_CJK.dat": "sha256-L7sV7NEYP37/Qr2FPCePo5cJqRgTXRwGHuwF5Q+0Nfs="
     },
     "assembly": {
-      "GuardianWasm.wasm": "sha256-jar3E54JY3C9m3sgh9ZxwimlvnS6UGJ0XNmdby6mTGE=",
+      "GuardianWasm.wasm": "sha256-WKf8jEAFe4rV/DSUX5Ytcm57GXczLAhZ0UMVem94n9c=",
       "Microsoft.AspNetCore.Components.wasm": "sha256-aqXdFVu3UuEpSHfkK+NIdNXgKXVoayzihnA0ujFLsjY=",
       "Microsoft.AspNetCore.Components.Web.wasm": "sha256-FE67YsiQ/Irg18hlNe2QV3GDAXAgHWCTghXVy8ILpkc=",
       "Microsoft.AspNetCore.Components.WebAssembly.wasm": "sha256-mq9Bf+1fRF6YC/ro2NPxtoh+szT1wSIzMzJ6FpNjYu8=",
