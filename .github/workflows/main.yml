@@ -25,7 +25,9 @@ jobs:
     - name: Publish .NET Core Project
       run: dotnet publish GuardianWasm.csproj -c:Release -o release --nologo
 
-
+    # Add .nojekyll file to tell GitHub Pages to not treat this as a Jekyll project. (Allow files and folders starting with an underscore)
+    - name: Add .nojekyll file
+      run: touch release/wwwroot/.nojekyll
     
     #Publish static files to Github pages
     - name: Commit wwwroot to GitHub Pages
