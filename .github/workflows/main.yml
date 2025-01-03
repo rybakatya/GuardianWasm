@@ -1,0 +1,36 @@
+name: AutoPublish
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy-to-github-pages:
+    runs-on: ubuntu-latest
+    steps:
+    # uses GitHub's checkout action to checkout code form the main branch
+    - uses: actions/checkout@v2
+    
+    # sets up .NET Core SDK 7.0.x
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 8.0.x
+    
+     # Install dotnet wasm buildtools workload
+    - name: Install .NET WASM Build Tools
+      run: dotnet workload install wasm-tools
+    
+    # Publishes Blazor project to the release-folder
+    - name: Publish .NET Core Project
+      run: dotnet publish GuardianWasm.csproj -c:Release -o dist/Web --nologo
+
+
+    
+    #Publish static files to Github pages
+    - name: Commit wwwroot to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@3.7.1
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH: gh-pages
+        FOLDER: dist/Web
