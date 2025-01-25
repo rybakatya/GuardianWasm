@@ -1,0 +1,309 @@
+﻿@inject StateContainer stateContainer;
+<HeaderComponent/>
+
+<ConfirmedText 
+StyleClass="text"
+LabelClass="memberText"
+Label="Opening"
+Question="Thank you for calling member services. My name is ___. In order to better assist you, may I please have your member id?"
+Value="@greetedMember"
+OnOptionSelected="@((value) => greetedMember = value)"
+/>
+<p class="toolText">IMPORTANT: If the caller asks a question or makes a statement instead of providing a member ID then this could be a <span style="color:yellow">CMS TEST CALL!</span></p>
+
+
+
+
+@if(greetedMember == true)
+{
+	<YesOrNoChoiceBubble
+	StyleClass="taskText"
+	Question="Were you able to verify HIPPA?"
+	Value="@verifiedHIPPA"
+	OnOptionSelected="@((value) => {
+			verifiedHIPPA = value;
+			if(value == 0)
+				stateContainer.HippaVerified = true;
+		})"
+	/>
+
+}
+
+@if(greetedMember && stateContainer.HippaVerified == true)
+{
+	<ConfirmedText 
+	StyleClass="text" 
+	LabelClass="memberText"
+	Label="Offer Assitance"
+	Question="How may I assist you today?"
+	Value="@offeredAssistance"
+	OnOptionSelected="@((value) => offeredAssistance = value)"
+	/>
+
+	if(greetedMember &&  offeredAssistance == true)
+	{
+		<ConfirmedText StyleClass="taskText"
+		LabelClass="memberText"
+		Label="Probe"
+		Question="Ask probing questions and repeat the concern back to caller"
+		Value="@probed"
+		OnOptionSelected="@((value) => probed = value)" />
+
+	}
+	if(greetedMember && offeredAssistance == true && probed == true)
+	{
+		<ConfirmedText StyleClass="text"
+		LabelClass="memberText"
+		Label="Willingness Statement"
+		Question="I'll happily assist with this today!"
+		Value="@willingnessStatement"
+		OnOptionSelected="@((value) => willingnessStatement = value)" />
+	}
+
+	if (greetedMember && offeredAssistance && probed && willingnessStatement)
+	{
+		<ConfirmedText StyleClass="text"
+		LabelClass="memberText"
+		Label="FCR"
+		Question="Is this the first time you're calling about this today?"
+		Value="@firstTimeCalling"
+		OnOptionSelected="@((value) => firstTimeCalling = value)" />
+	}
+
+	if (greetedMember && offeredAssistance && probed && willingnessStatement && firstTimeCalling)
+	{
+		<ConfirmedText StyleClass="taskText"
+		LabelClass="memberText"
+		Label="Empathy"
+		Question="If applicable show member empathy about anything they express dissatisfaction with(even if not related to the call in the slightest. 'I stubbed my toe earlier - 'Im sorry that happened I know that hurts'').'"
+		Value="@shownEmpathy"
+		OnOptionSelected="@((value) => shownEmpathy = value)" />
+
+	}
+
+	if (greetedMember && offeredAssistance && probed && willingnessStatement && firstTimeCalling && shownEmpathy)
+	{
+		<ConfirmedText StyleClass="text"
+		LabelClass="memberText"
+		Label="Rapport"
+		Question="Is it ok if I call you by your first name?"
+		Value="@builtRapport"
+		OnOptionSelected="@((value) => builtRapport = value)" />
+	}
+
+	if(greetedMember && offeredAssistance && probed && willingnessStatement && firstTimeCalling && shownEmpathy && builtRapport)
+	{
+		<ConfirmedText StyleClass="text"
+		LabelClass="memberText"
+		Label="Member Summary"
+		Question="I see you're plan is currently effective as of (*PLAN START DATE*) end date of (*PLAN END DATE*) under (*PLAN NAME*), the primary care physician we have on file for you is (*PCP*) at (*PPG*)"
+		Value="@planSummary"
+		OnOptionSelected="@((value) => planSummary = value)" />
+		<p class="taskText">IMPORTANT: If member does not have a PCP assigned or they said the one you listed above is incorrect be sure to resolve this before the end of the call.</p>
+	}
+	if (greetedMember && offeredAssistance && probed && willingnessStatement && firstTimeCalling && shownEmpathy && builtRapport && planSummary)
+	{
+
+
+		<ConfirmedText StyleClass="taskText"
+		LabelClass="memberText"
+		Label="Demographics"
+		Question="Confirm if any demographics have changed(phone number, email address, street address"
+		Value="@demographics"
+		OnOptionSelected="@((value) => demographics = value)" />
+		<p class="taskText">IMPORTANT: If members accounts has any <span class="memberText">alerts ⚠️</span> be sure to click them and read them back word for word to the member.</p>
+
+
+	}
+	if (greetedMember && offeredAssistance && probed && willingnessStatement
+	&& firstTimeCalling && shownEmpathy && builtRapport && planSummary && demographics)
+	{
+		<ConfirmedText StyleClass="taskText"
+		LabelClass="memberText"
+		Label="Professionalism"
+		Question="When placing member on hold, inform the member why you need to place the call on hold, how long it will be ask for permission, then thank them. Be sure to come back in the timeframe promised. I need to place the call on a brief hold for 2-3 minutes while I reach out to your providers office. Is that alright? Thank you so much for your patience. Please remain on the line."					   
+		Value="@professionalism"
+		OnOptionSelected="@((value) => professionalism = value)" />
+	}
+
+	if (greetedMember && offeredAssistance && probed && willingnessStatement
+	&& firstTimeCalling && shownEmpathy && builtRapport && planSummary && demographics && professionalism)
+	{
+		<ConfirmedText StyleClass="taskText"
+		LabelClass="memberText"
+		Label="Compliance"
+		Question="Read all RED disclaimers failing to do so could result in a CTM"
+		Value="@disclaimers"
+		OnOptionSelected="@((value) => disclaimers = value)" />
+	}
+	if (greetedMember && offeredAssistance && probed && willingnessStatement
+		&& firstTimeCalling && shownEmpathy && builtRapport && planSummary && demographics && professionalism && disclaimers)
+	{
+		<ConfirmedText StyleClass="memberText"
+		LabelClass="memberText"
+		Label="FCR"
+		Question="Verify members concern has been addressed and if member understood the information provided"
+		Value="@fcrVerified"
+		OnOptionSelected="@((value) => fcrVerified = value)" />
+	}
+	if (greetedMember && offeredAssistance && probed && willingnessStatement
+	&& firstTimeCalling && shownEmpathy && builtRapport && planSummary && demographics && professionalism 
+	&& disclaimers && fcrVerified)
+	{
+		<ConfirmedText StyleClass="text"
+		LabelClass="memberText"
+		Label="Additional Assistance"
+		Question="Is there anything else I can assist you with today?"
+		Value="@additionalAssistance"
+		OnOptionSelected="@((value) => additionalAssistance = value)" />
+
+	}
+
+
+
+}
+
+@if(verifiedHIPPA == 1)
+{
+
+}
+
+<div class="container">
+	<CallerTypeDropdown />
+	<MemberStateDropdown OnStateSelected="@((value) => state = value)" />
+</div>
+<br/>
+@if(state != null)
+{
+	brandName = state.PrimaryBrandName;
+	if(state.Name.Equals("California (CA)"))
+	{
+		<div>
+			<input name="egwp"
+			type="checkbox"
+			key="egwpCheckbox"
+			checked="@tickedEgwp"
+			@onchange=OnAltPlanSelected/>
+			<span class="toolText">Group name begins with SP?</span>
+
+			<input name="dualAlign"
+			type="checkbox"
+			key="dualCheckbox"
+			checked ="@tickedDual"
+			@onchange=OnDualSelected />
+			<span class="toolText">Plan name is Wellcare dual align??</span>
+		</div>
+
+		if (tickedDual == true)
+			brandName = state.TeriataryBrandName;
+		if (tickedEgwp == true)
+			brandName = state.SecondaryBrandName;
+
+		if (tickedDual == false && tickedEgwp == false)
+			brandName = state.PrimaryBrandName;
+
+	}
+
+	if (state.Name.Equals("Oregon (OR)"))
+	{
+		<div>
+			<input name="egwp"
+				   type="checkbox"
+				   key="egwpCheckbox"
+				   checked="@tickedEgwp"
+				   @onchange=OnAltPlanSelected />
+			<span class="toolText">Group name begins with SP?</span>
+
+			<input name="dualAlign"
+				   type="checkbox"
+				   key="dualCheckbox"
+				   checked="@tickedDual"
+				   @onchange=OnDualSelected />
+			<span class="toolText">Plan name is Wellcare dual align??</span>
+		</div>
+
+		if (tickedDual == true)
+			brandName = state.TeriataryBrandName;
+		if (tickedEgwp == true)
+			brandName = state.SecondaryBrandName;
+
+		if (tickedDual == false && tickedEgwp == false)
+			brandName = state.PrimaryBrandName;
+
+	}
+	<p class="memberText">State Brand:&nbsp;<span class="text"> @brandName</span></p>
+
+}
+<p class="linkStyle"></p>
+<TextField Label="Call Reason:" RecognizedText="@callReason"/>
+<TextField Label="Call Action:"  />
+<TextField Label="Call Resolution:" />
+<br />
+<div class="block">
+	<button class="button textStyle">Generate Summary</button>
+	<button class="button textStyle">Copy Notes</button>
+</div>
+
+
+@code {
+	private bool greetedMember = false;
+	private bool confirmedName = false; 
+	private bool confirmedCaller = false;
+	private bool thirdPartyConfirmed = false;
+	private string brandName = "Wellecare by Allwell";
+	private int verifiedHIPPA = -1;
+
+	private string? callReason;
+	private string? callAction;
+	private string? callResolution;
+
+
+	private bool offeredAssistance = false;
+	private bool probed = false;
+	private bool willingnessStatement = false;
+	private bool firstTimeCalling = false;
+	private bool shownEmpathy = false;
+	private bool builtRapport = false;
+	private bool planSummary = false;
+	private bool demographics = false;
+
+	private int offeredPortal = -1;
+
+	private bool professionalism;
+	private bool disclaimers;
+	private bool fcrVerified;
+
+	private bool additionalAssistance = false;
+
+
+	private State? state;
+
+
+	private bool tickedEgwp = false;
+	private bool tickedDual = false;
+	private void OnAltPlanSelected(ChangeEventArgs changeEventArgs)
+	{
+		var val = bool.Parse(changeEventArgs.Value.ToString());
+		tickedEgwp = val;
+		if (val == true)
+		{
+			tickedDual = false;
+		}
+
+
+		StateHasChanged();
+	}
+
+	private void OnDualSelected(ChangeEventArgs changeEventArgs)
+	{
+		var val = bool.Parse(changeEventArgs.Value.ToString());
+		tickedDual = val;
+		if (val == true)
+		{
+			tickedEgwp = false;
+		}
+
+		
+		StateHasChanged();
+	}
+}

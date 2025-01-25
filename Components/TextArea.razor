@@ -1,0 +1,179 @@
+﻿@inject IJSRuntime JS
+@using Toolbelt.Blazor.SpeechRecognition
+@inject SpeechRecognition SpeechRecognition
+
+<div>
+    <label class="label textStyle" for="inputField">@Label</label>
+
+
+    <textarea class="textBox textStyle" id="inputField" @bind="RecognizedText" rows="6">
+        @RecognizedText @interimResults
+    </textarea>
+
+
+
+	<!-- Button to Start/Stop Recognition when Pressed -->
+    <button class="button textStyle" @onmousedown="StartRecognition" @onmouseup="StopRecognition" @onmouseleave="StopRecognition">
+        🎤 Hold for voice input
+    </button>
+</div>
+
+<style>
+    .final {
+    display: flex;
+    width: auto;
+    display: block;
+    height: inherit;
+    min-height: 150px;
+    }
+
+    .textStyle {
+    color: #B2B0BF;
+    font-weight: 700;
+    font-size: 18px;
+    border: none;
+    }
+
+    .label {
+    margin-left: 2.5%;
+    }
+
+    .button {
+    margin-left: 2.5%;
+    }
+
+    .textBox {
+    width: 95%;
+    margin-left: 2.5%;
+    min-height: 150px;
+    resize: none;
+    background-color: #151B23;
+    outline-width: 1px;
+    border: none;
+    outline: 1px solid rgba(61, 68, 77, 0.75);
+    }
+
+    .textBox:focus {
+    border: none;
+    outline: 1px solid rgba(61, 68, 77, 1);
+    }
+
+    .button {
+    background-color: #151B23;
+    }
+
+    .interim {
+    color: #757575; /* Gray color to differentiate interim text */
+    }
+</style>
+
+@code {
+        [Parameter]
+        public string RecognizedText { get; set; } = string.Empty;
+
+    private bool isListening { get; set; } = false;
+    private bool isTyping { get; set; } = false;  // Track if the user is typing manually
+    private bool isFocused { get; set; } = false;  // Track if the contentEditable is focused
+    private ElementReference contentEditableElement;
+    [Parameter]
+    public string Label { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> OnValueChanged { get; set; }
+
+    private bool available = true;
+    private string? interimResults;
+
+    // Separate buffers for manual typing and speech input
+    private string typedText = string.Empty;
+    private string speechText = string.Empty; // Holds speech input
+
+    protected override void OnInitialized()
+    {
+        SpeechRecognition.Lang = "en-US";
+        SpeechRecognition.InterimResults = true;
+        SpeechRecognition.Continuous = true;
+        SpeechRecognition.Result += OnSpeechRecognized;
+        SpeechRecognition.End += OnSpeechEnded;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            available = await SpeechRecognition.IsAvailableAsync();
+            StateHasChanged();
+        }
+    }
+
+
+    public string GetNewPortion(string partOne, string partTwo)
+    {
+        if (partTwo.StartsWith(partOne))
+        {
+            return partTwo.Substring(partOne.Length);
+        }
+        return string.Empty; // Return an empty string if partOne is not at the start of partTwo
+    }
+
+
+    private async void OnSpeechRecognized(object sender, SpeechRecognitionEventArgs args)
+    {
+
+        if (isTyping || isFocused) return;  // Prevent speech recognition from updating while the user is typing
+
+        var interimText = string.Empty;
+
+        for (int i = args.ResultIndex; i < args.Results.Length; ++i)
+        {
+            if (args.Results[i].IsFinal)
+            {
+                // Append final speech input to speech buffer (preserving previous speech input)
+                RecognizedText += args.Results[i].Items[0].Transcript + " ";
+                interimResults = null; // Clear interim results once finalized
+            }
+            else
+            {
+                // Add interim speech results to interimText
+                interimText += args.Results[i].Items[0].Transcript + " ";
+            }
+        }
+
+        // Update interimResults without clearing prematurely
+        interimResults = interimText.Trim();
+
+        StateHasChanged();
+    }
+
+    private async Task StartRecognition()
+    {
+        if (!isListening)
+        {
+            isListening = true;
+            await SpeechRecognition.StartAsync();
+        }
+    }
+
+    private async Task StopRecognition()
+    {
+        if (isListening)
+        {
+            await SpeechRecognition.StopAsync();
+        }
+    }
+
+    private void OnSpeechEnded(object sender, EventArgs args)
+    {
+        if (isListening)
+        {
+            isListening = false;
+            interimResults = null; // Clear interim results when speech ends
+            
+            StateHasChanged();
+        }
+    }
+
+    
+
+    
+}

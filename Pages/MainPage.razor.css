@@ -1,0 +1,16 @@
+﻿
+.child {
+    display: inline-block;
+}
+
+.button {
+    margin-left: 2.5%;
+
+}
+
+.textStyle {
+    color: #B2B0BF;
+    font-weight: 700;
+    font-size: 18px;
+    border: none;
+}

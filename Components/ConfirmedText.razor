@@ -1,0 +1,46 @@
+﻿@code {
+    [Parameter]
+    public string? StyleClass { get; set; }
+
+    [Parameter] 
+    public string? LabelClass { get; set; }
+
+    [Parameter]
+    public string Label { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Question { get; set; } = string.Empty;
+
+    [Parameter]
+    public bool Value { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnOptionSelected { get; set; }
+
+    private bool currentChoice;
+
+    protected override void OnInitialized()
+    {
+        currentChoice = Value; // Initialize current choice with the provided Value parameter
+    }
+
+    private async Task SelectOption(ChangeEventArgs e)
+    {
+        if (bool.TryParse(e.Value?.ToString(), out bool isChecked) && currentChoice != isChecked)
+        {
+            currentChoice = isChecked;
+            await OnOptionSelected.InvokeAsync(isChecked);
+        }
+    }
+}
+
+<div class="checkbox-container">
+    <label class="@LabelClass">
+        <input 
+               name="@Question"
+               type="checkbox"
+               checked="@(currentChoice)"
+               @onchange="SelectOption" />
+        [@Label]: <span class="@StyleClass">@Question</span>
+    </label>
+</div>

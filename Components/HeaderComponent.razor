@@ -1,0 +1,24 @@
+﻿@page "/navbar"
+
+@* Razor Component: Horizontal Navbar with Dropdowns *@
+
+<div class="navbar">
+    <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#">Contacts</a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Web Development</a></li>
+                <li><a class="dropdown-item" href="#">App Development</a></li>
+                <li class="dropdown-submenu">
+                    <a class="dropdown-item dropdown-toggle" href="#">Design</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">UI/UX Design</a></li>
+                        <li><a class="dropdown-item" href="#">Graphic Design</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+

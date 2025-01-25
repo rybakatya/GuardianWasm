@@ -1,0 +1,44 @@
+﻿@inject StateContainer stateContainer;
+
+<div class="container">
+	<p class="memberText">State: </p>
+	<select @onchange="HandleChange">
+		@foreach (var state in stateContainer.AvailableStates)
+		{
+			<option value="@state.Name">@state.Name</option>
+		}
+	</select>
+</div>
+@code 
+{
+
+
+	[Parameter]
+	public EventCallback<State> OnStateSelected { get; set; }
+
+
+	private async Task HandleChange(ChangeEventArgs e)
+	{
+		Console.WriteLine(e.Value.ToString());
+		foreach(var state in stateContainer.AvailableStates)
+		{
+			if (state.Name.Equals(e.Value.ToString()))
+			{
+				await OnStateSelected.InvokeAsync(state);
+				StateHasChanged();
+				break;
+			}
+		}
+	}
+
+	
+	
+	
+}
+
+<style>
+
+.container p, select{
+	display: inline-block;
+}
+</style>

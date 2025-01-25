@@ -1,0 +1,116 @@
+﻿/* Universal reset to remove margin, padding, and set box-sizing globally */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Ensure padding and border don't add extra space */
+}
+
+/* Remove any padding or margin from the html and body */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Ensure the parent div (likely #app) takes full height and width */
+#app {
+    margin: 0; /* Remove margin */
+    padding: 0; /* Remove padding */
+    width: 100%; /* Ensure full width */
+    height: 100%; /* Ensure full height */
+    display: flex; /* Use flexbox to ensure children fill the full viewport */
+    flex-direction: column;
+}
+
+/* Navbar container */
+.navbar {
+    background-color: #333;
+    width: 100%; /* Ensure full width */
+    padding: 0; /* Remove padding */
+    margin: 0; /* Remove margin */
+    border: 0; /* Ensure no borders are contributing to the size */
+    display: block; /* Ensure navbar is block-level, spanning full width */
+    box-sizing: border-box; /* Ensure padding and borders are included in width */
+    position: relative; /* Position relative to avoid spacing issues */
+}
+
+/* Navbar navigation list */
+.navbar-nav {
+    list-style-type: none;
+    display: flex;
+    padding: 0;
+    margin: 0;
+}
+
+/* Individual nav items */
+.nav-item {
+    position: relative;
+}
+
+/* Links within the navbar */
+.nav-link {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    display: block;
+    margin: 0; /* Ensure no margin */
+}
+
+    .nav-link:hover {
+        background-color: #444;
+    }
+
+/* Dropdown menu */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: #444;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    top: 100%; /* Position dropdown below the parent */
+    left: 0;
+    z-index: 1;
+    min-width: 160px; /* Ensures it doesn't collapse if no content */
+}
+
+/* Dropdown items */
+.dropdown-item {
+    color: white;
+    padding: 10px 15px;
+    text-decoration: none;
+    display: block;
+}
+
+    .dropdown-item:hover {
+        background-color: #555;
+    }
+
+/* Show the first level of dropdown on hover */
+.dropdown:hover > .dropdown-menu {
+    display: block;
+}
+
+/* Nested dropdown (submenu) */
+.dropdown-submenu {
+    position: relative; /* Ensure it's positioned relative to the parent */
+}
+
+    /* Nested dropdown menu */
+    .dropdown-submenu .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 0; /* Align with the top of the parent dropdown */
+        left: 100%; /* Position it to the right of the parent */
+        background-color: #444;
+        min-width: 160px; /* Minimum width for consistency */
+        z-index: 2; /* Ensure it appears above the parent dropdown */
+    }
+
+    /* Show nested dropdown on hover */
+    .dropdown-submenu:hover > .dropdown-menu {
+        display: block;
+    }

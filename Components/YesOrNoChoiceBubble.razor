@@ -1,0 +1,53 @@
+﻿@code {
+    [Parameter]
+    public string? StyleClass { get; set; }
+
+    [Parameter]
+    public string Question { get; set; } = string.Empty;
+
+    [Parameter]
+    public int Value { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnOptionSelected { get; set; }
+
+    private int currentChoice;
+
+    private List<string> options = new List<string>()
+    {
+        "Yes",
+        "No"
+    };
+
+    // Initialize currentChoice with Value when the component is first created
+    protected override void OnInitialized()
+    {
+        currentChoice = Value; // Initialize current choice with the provided Value parameter
+    }
+
+    private async Task SelectOption(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int index) && currentChoice != index)
+        {
+            currentChoice = index;
+            await OnOptionSelected.InvokeAsync(index);
+        }
+    }
+}
+
+<div class="quiz-container">
+    <p class="@StyleClass">@Question</p>
+    <div>
+        @for (int i = 0; i < options.Count; i++)
+        {
+            <label class="@StyleClass">
+                <input type="radio"
+                       name="@($"quiz-options-{Question}")" 
+                       value="@i"
+                       @onchange="SelectOption"
+                       checked="@(currentChoice == i)" />
+                @options[i]
+            </label>
+        }
+    </div>
+</div>
