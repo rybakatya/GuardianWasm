@@ -1,15 +1,50 @@
-.valid.modified:not([type=checkbox]) {
-    outline: 1px solid #26b050;
+body {
+    max-width:100%;
+    color: white;
+    background: #0D1117;
+    transition: color 0.5s, background-color 0.5s;
+    line-height: 1.6;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-size: 15px;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+select {
+    margin-left:8px;
+}
+p {
+    margin-top:0;
+    margin-left:8px;
+    margin-bottom:0;
 }
 
-.invalid {
-    outline: 1px solid red;
+input {
+    margin-left:8px;
+}
+.text {
+    color: #B2B0BF;
+    font-weight: 700;
 }
 
-.validation-message {
-    color: red;
+.warning {
+    color:yellow;
+    font-weight:700;
+}
+.toolText {
+    color: #e74c3c;
+    font-weight: 700;
 }
 
+.memberText {
+    color: #f39c12;
+    font-weight: 700;
+}
+
+.taskText {
+    color: #9879E3;
+    font-weight: 700;
+}
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;
@@ -72,6 +107,15 @@
         content: var(--blazor-load-percentage-text, "Loading");
     }
 
-code {
-    color: #c02d76;
+
+    #app {
+        margin:0;
+    }
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }

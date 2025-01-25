@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GuardianWasm</title>
-    <base href="/GuardianWasm/" />
-    <link rel="stylesheet" href="css/app.css" />
-    <!-- If you add any scoped CSS files, uncomment the following to load them
-    <link href="GuardianWasm.styles.css" rel="stylesheet" /> -->
+    <base href="/" />
+    <link rel="stylesheet" href="../css/app.css" />
+
+    <link href="GuardianWasm.styles.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -26,6 +26,70 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
+
+    <script src="js/speechRecognition.js"></script>
+
 </body>
 
 </html>
+<script>
+    window.getContentEditableText = (element) => {
+
+        return element?.innerText || "";  // Ensure it returns an empty string if the text is null
+    };
+
+    window.setContentEditableText = (element, text) => {
+        if (element && text !== undefined && text !== null) {
+            element.innerText = text || "";  // Ensure text is not null or undefined
+        }
+    };
+
+
+    
+    window.getCaretPosition = (element) => {
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
+        const preCaretRange = range.cloneRange();
+        preCaretRange.selectNodeContents(element);
+        preCaretRange.setEnd(range.endContainer, range.endOffset);
+        return preCaretRange.toString().length;
+    };
+
+    window.setCaretPosition = (element, position) => {
+        const range = document.createRange();
+        const selection = window.getSelection();
+        range.setStart(element, 0);
+        range.setEnd(element, 0);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        range.setStart(element, position);
+        range.setEnd(element, position);
+    };
+
+    window.startContentEditableObserver = function (element) {
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'characterData' || mutation.type === 'childList') {
+                    // Call Blazor's OnContentChanged when content changes
+                    DotNet.invokeMethodAsync('GuardianWasm', 'OnContentChanged', element.innerText);
+                }
+            });
+        });
+
+        observer.observe(element, {
+            childList: true,
+            characterData: true,
+            subtree: true
+        });
+    };
+
+</script>
+
+
+
+
+
+
+
+
+
