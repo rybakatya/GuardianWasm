@@ -30,7 +30,7 @@ jobs:
       run: touch release/wwwroot/.nojekyll
 
     - name: Change base-tag in index.html from / to WebPortfolio
-      run: sed -i 's/<base href="\/" \/>/<base href="\/WebPortfolio\/" \/>/g' release/wwwroot/index.html
+      run: sed -i 's/<base href="\/" \/>/<base href="\/GuardianWasm\/" \/>/g' release/wwwroot/index.html
 
     
     #Publish static files to Github pages
