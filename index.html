@@ -35,6 +35,16 @@
 </html>
 <script>
 
+    function openResearchLinks() {
+
+        var text = document.getElementById("search").value;
+         
+        var win = window.open('https://cenpointprd.ad.wellcare.com/search?search=' + text, ' Site Search | Wellcare', 'popup=1');
+        win.focus();
+        win.location.reload();
+    }
+
+
     window.clipboardCopy = {
         copyText: function (text) {
             navigator.clipboard.writeText(text).then(function () {
