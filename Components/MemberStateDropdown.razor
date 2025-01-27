@@ -1,7 +1,7 @@
 ﻿@inject StateContainer stateContainer;
 
 <div class="container">
-	<p class="memberText">State: </p>
+	<p class=@StyleClass>State: </p>
 	<select @onchange="HandleChange">
 		@foreach (var state in stateContainer.AvailableStates)
 		{
@@ -12,7 +12,8 @@
 @code 
 {
 
-
+	[Parameter]
+	public string StyleClass { get; set; }
 	[Parameter]
 	public EventCallback<State> OnStateSelected { get; set; }
 

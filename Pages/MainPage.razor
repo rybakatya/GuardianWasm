@@ -1,5 +1,5 @@
 ﻿@inject StateContainer stateContainer;
-<HeaderComponent/>
+@inject IJSRuntime JSRuntime
 
 <ConfirmedText 
 StyleClass="text"
@@ -65,9 +65,21 @@ OnOptionSelected="@((value) => greetedMember = value)"
 		<ConfirmedText StyleClass="text"
 		LabelClass="memberText"
 		Label="FCR"
-		Question="Is this the first time you're calling about this today?"
+		Question="Is this the first time you're calling about this?"
 		Value="@firstTimeCalling"
 		OnOptionSelected="@((value) => firstTimeCalling = value)" />
+
+
+		<YesOrNoChoiceBubble
+		StyleClass="memberText"
+		Question="First time calling?"
+		Value="@isFirstCall"
+		OnOptionSelected="@((value) => isFirstCall = value)"
+		/>
+		if(isFirstCall == 1)
+		{
+			<p class="taskText">This is a repeat caller and should be transferred to MET</p>
+		}
 	}
 
 	if (greetedMember && offeredAssistance && probed && willingnessStatement && firstTimeCalling)
@@ -75,7 +87,7 @@ OnOptionSelected="@((value) => greetedMember = value)"
 		<ConfirmedText StyleClass="taskText"
 		LabelClass="memberText"
 		Label="Empathy"
-		Question="If applicable show member empathy about anything they express dissatisfaction with(even if not related to the call in the slightest. 'I stubbed my toe earlier - 'Im sorry that happened I know that hurts'').'"
+		Question="If applicable show member empathy about anything they express dissatisfaction with.'"
 		Value="@shownEmpathy"
 		OnOptionSelected="@((value) => shownEmpathy = value)" />
 
@@ -163,19 +175,17 @@ OnOptionSelected="@((value) => greetedMember = value)"
 
 }
 
-@if(verifiedHIPPA == 1)
-{
-
-}
 
 <div class="container">
 	<CallerTypeDropdown />
-	<MemberStateDropdown OnStateSelected="@((value) => state = value)" />
+	<MemberStateDropdown StyleClass="toolText" OnStateSelected="@((value) => state = value)" />
 </div>
+
 <br/>
 @if(state != null)
 {
 	brandName = state.PrimaryBrandName;
+	siteName = state.PrimarySiteLink;
 	if(state.Name.Equals("California (CA)"))
 	{
 		<div>
@@ -197,10 +207,12 @@ OnOptionSelected="@((value) => greetedMember = value)"
 		if (tickedDual == true)
 			brandName = state.TeriataryBrandName;
 		if (tickedEgwp == true)
+		{
 			brandName = state.SecondaryBrandName;
+			siteName = state.SecondarySiteLink;
+		}
 
-		if (tickedDual == false && tickedEgwp == false)
-			brandName = state.PrimaryBrandName;
+
 
 	}
 
@@ -208,55 +220,94 @@ OnOptionSelected="@((value) => greetedMember = value)"
 	{
 		<div>
 			<input name="egwp"
-				   type="checkbox"
-				   key="egwpCheckbox"
-				   checked="@tickedEgwp"
-				   @onchange=OnAltPlanSelected />
-			<span class="toolText">Group name begins with SP?</span>
+			type="checkbox"
+			key="egwpCheckbox"
+			checked="@tickedTrillium"
+			@onchange=OnTrillium />
+			<span class="toolText">Group name is trillium?</span>
 
-			<input name="dualAlign"
-				   type="checkbox"
-				   key="dualCheckbox"
-				   checked="@tickedDual"
-				   @onchange=OnDualSelected />
-			<span class="toolText">Plan name is Wellcare dual align??</span>
+
 		</div>
 
-		if (tickedDual == true)
-			brandName = state.TeriataryBrandName;
-		if (tickedEgwp == true)
+		if (tickedTrillium == true)
+		{
 			brandName = state.SecondaryBrandName;
+			siteName = state.SecondarySiteLink;
+		}
 
-		if (tickedDual == false && tickedEgwp == false)
-			brandName = state.PrimaryBrandName;
 
 	}
 	<p class="memberText">State Brand:&nbsp;<span class="text"> @brandName</span></p>
+	<p class="memberText">State Site:&nbsp;<a target="_blank" href=@siteName>@siteName</a></p>
 
 }
-<p class="linkStyle"></p>
-<TextField Label="Call Reason:" RecognizedText="@callReason"/>
-<TextField Label="Call Action:"  />
-<TextField Label="Call Resolution:" />
+@if (stateContainer.CallerType != CallerType.Member && stateContainer.CallerType != CallerType.Select)
+{
+	<YesOrNoChoiceBubble StyleClass="memberText"
+	Question="Verbal auth obtained?"
+	Value="@gotVerbal"
+	OnOptionSelected="@((value) => gotVerbal = value )" />
+}
+
+<TextField @ref="reasonField" Label="Call Reason: - today you called us because..."/>
+<TextField @ref="actionField" Label="Call Action:"  />
+<TextField @ref="resolutionField" Label="Call Resolution: - and I've ...'" />
 <br />
 <div class="block">
-	<button class="button textStyle">Generate Summary</button>
-	<button class="button textStyle">Copy Notes</button>
+	<button @onclick=GenerateSummary class="button textStyle">Generate Summary</button>
+	<button @onclick=CopyNotes class="button textStyle">Copy Notes</button>
+</div>
+
+<div class="block">
+	<input type="text" @bind=searchText />
+	<button>Search Central Point</button>
 </div>
 
 
+
+
+@if(showSummary == true)
+{
+	<p class="text"><span class="memberText">Summarize: </span> @summaryText</p>
+	<YesOrNoChoiceBubble 
+	StyleClass="memberText"
+	Question="Member wants to take survey?"
+	Value="@afterCallSurvey"
+	OnOptionSelected="@((value) =>  afterCallSurvey = value)"
+	/>
+
+	if(afterCallSurvey == 0)
+	{
+		<p class="text">Thank you for that. Just as a reminder, on the first question 1 is dissatisfied and 5 is very satisfied. Thank you for calling @brandName. Have a great day and bye for now.</p>
+	}
+	else if(afterCallSurvey == 1)
+	{
+		<p class="text">Alright well in that case disconnect whenever you're ready. Thank you for calling @brandName. Have a great day and bye for now.</p>
+	}
+}
+else if(showError == true)
+{
+	<p class="toolText">@errorText</p>
+}
 @code {
+	private string searchText;
+	private int afterCallSurvey = -1;
+	private TextField reasonField;
+	private TextField actionField;
+	private TextField resolutionField;
+	private MainPage thisInstance = null;
 	private bool greetedMember = false;
 	private bool confirmedName = false; 
 	private bool confirmedCaller = false;
 	private bool thirdPartyConfirmed = false;
-	private string brandName = "Wellecare by Allwell";
+	private string brandName = "Wellcare by Allwell";
+	private string siteName = "";
 	private int verifiedHIPPA = -1;
-
+	private int isFirstCall = -1;
 	private string? callReason;
 	private string? callAction;
 	private string? callResolution;
-
+	private int gotVerbal = -1;
 
 	private bool offeredAssistance = false;
 	private bool probed = false;
@@ -267,7 +318,7 @@ OnOptionSelected="@((value) => greetedMember = value)"
 	private bool planSummary = false;
 	private bool demographics = false;
 
-	private int offeredPortal = -1;
+
 
 	private bool professionalism;
 	private bool disclaimers;
@@ -281,6 +332,20 @@ OnOptionSelected="@((value) => greetedMember = value)"
 
 	private bool tickedEgwp = false;
 	private bool tickedDual = false;
+
+	private bool tickedTrillium = false;
+
+
+	protected override void OnInitialized()
+	{
+		thisInstance = this;
+	}
+	private void OnTrillium(ChangeEventArgs changeEventArgs)
+	{
+		var val = bool.Parse(changeEventArgs.Value.ToString());
+		tickedTrillium = val;
+		StateHasChanged();
+	}
 	private void OnAltPlanSelected(ChangeEventArgs changeEventArgs)
 	{
 		var val = bool.Parse(changeEventArgs.Value.ToString());
@@ -302,8 +367,93 @@ OnOptionSelected="@((value) => greetedMember = value)"
 		{
 			tickedEgwp = false;
 		}
-
-		
 		StateHasChanged();
+	}
+
+	private bool showSummary = false;
+	private bool showError = false;
+	private string errorText = string.Empty;
+	private string summaryText = string.Empty;
+	private void GenerateSummary()
+	{
+		if(reasonField.RecognizedText == string.Empty)
+		{
+			errorText = "Call Reason cannot be empty.";
+			showError = true;
+			showSummary = false;
+			return;
+		}
+
+		if(actionField.RecognizedText == string.Empty)
+		{
+			errorText = "Call Action cannot be empty.";
+			showError = true;
+			showSummary = false;
+			return;
+		}
+
+		if(resolutionField.RecognizedText == string.Empty)
+		{
+			errorText = "Call Resolution cannot be empty.";
+			showError = true;
+			showSummary = false;
+			return;
+		}
+		if(state == null)
+		{
+			errorText = "You must select a state.";
+			showError = true;
+			showSummary = false;
+			return;
+		}
+
+		if(stateContainer.CallerType == CallerType.Select)
+		{
+			errorText = "You must select a caller type.";
+			showError = true;
+			showSummary = false;
+			return;
+		}
+
+		summaryText = "Just to summarize what we did today, you called us to " + reasonField.RecognizedText + " and what I did was " + resolutionField.RecognizedText + ". Additionally we do have self service options at our website, " + siteName + " where you can print new id cards in case they're lost, view providers and specialists covered by your plan, and view your current claims and authorizations. Now since you didn't need any further help right now, would you like to stay on the line for a brief survey on how I have assisted you today?";
+		showError = false;
+		showSummary = true;
+	}
+
+	private async Task CopyNotes()
+	{
+		string notes = "Caller Name:";
+		notes += "\nInteraction ID:";
+		notes += "\nCallback Number:";
+		notes += "\nCaller Type: " + stateContainer.CallerType.ToString();
+
+		if(gotVerbal == 0)
+			notes += "\nObtained verbal authorization for: ";
+
+		if (verifiedHIPPA == 1)
+			notes += "\nVerified HIPPA for caller";
+
+		if (planSummary == true)
+			notes += "\nWent over plan summary.";
+
+		if (demographics == true)
+			notes += "\nWent over demographics.";
+		if (isFirstCall == 0)
+			notes += "\nThis is the first time calling about this.";
+
+		if (isFirstCall == 1)
+			notes += "\nThis is NOT the first time calling about this.";
+
+
+		notes += "\nCall Reason: " + reasonField.RecognizedText;
+		notes += "\nCall Action: " + actionField.RecognizedText;
+		notes += "\nCall Resolution: " + resolutionField.RecognizedText;
+
+		if(fcrVerified == true && additionalAssistance == true)
+		{
+			notes += "\nMember understood all information provided and didn't need any additional assistance.";
+		}
+		await JSRuntime.InvokeVoidAsync("clipboardCopy.copyText", notes);
+
 	}
 }

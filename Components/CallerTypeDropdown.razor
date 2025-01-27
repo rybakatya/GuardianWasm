@@ -1,6 +1,7 @@
-﻿<div class="container">
+﻿@inject StateContainer stateContainer;
+<div class="container">
 	<p class="memberText">Caller type: </p>
-	<select @bind="callerType">
+	<select @bind="stateContainer.CallerType">
 		@foreach (var role in Enum.GetValues(typeof(CallerType)))
 		{
 			<option value="@role">@role</option>

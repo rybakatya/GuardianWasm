@@ -3,15 +3,11 @@
 @inject SpeechRecognition SpeechRecognition
 
 <div>
-    <label class="label textStyle" for="inputField">@Label</label>
-
-
-    <textarea class="textBox textStyle" id="inputField" @bind="RecognizedText" rows="6">
-        @RecognizedText @interimResults
-    </textarea>
-
-
-
+    <label class="label textStyle" for="@Label">@Label</label>
+    <br />
+    <!-- Textarea for manual typing and speech results -->
+    <textarea class="textBox textStyle" id="@Label" value="@CombinedText" @oninput="OnInput" rows="6"></textarea>
+    <br />
     <!-- Button to Start/Stop Recognition when Pressed -->
     <button class="button textStyle" @onmousedown="StartRecognition" @onmouseup="StopRecognition" @onmouseleave="StopRecognition">
         🎤 Hold for voice input
@@ -35,17 +31,20 @@
     }
 
     .label {
-        margin-left: 2.5%;
+        margin-left: 8px;
     }
 
     .button {
-        margin-left: 2.5%;
+        margin-left: 8px;
     }
 
     .textBox {
         width: 95%;
-        margin-left: 2.5%;
+        margin-left: 8px;
         min-height: 150px;
+        max-width:450px;
+        overflow:hidden;
+        field-sizing: content;
         resize: none;
         background-color: #151B23;
         outline-width: 1px;
@@ -73,8 +72,7 @@
 
     private bool isListening { get; set; } = false;
     private bool isTyping { get; set; } = false;  // Track if the user is typing manually
-    private bool isFocused { get; set; } = false;  // Track if the contentEditable is focused
-    private ElementReference contentEditableElement;
+    private bool isFocused { get; set; } = false; // Track if the textarea is focused
     [Parameter]
     public string Label { get; set; } = string.Empty;
 
@@ -84,9 +82,8 @@
     private bool available = true;
     private string? interimResults;
 
-    // Separate buffers for manual typing and speech input
-    private string typedText = string.Empty;
-    private string speechText = string.Empty; // Holds speech input
+    // Computed property to combine RecognizedText and interimResults
+    private string CombinedText => RecognizedText + interimResults;
 
     protected override void OnInitialized()
     {
@@ -106,21 +103,15 @@
         }
     }
 
-
-    public string GetNewPortion(string partOne, string partTwo)
+    private void OnInput(ChangeEventArgs e)
     {
-        if (partTwo.StartsWith(partOne))
-        {
-            return partTwo.Substring(partOne.Length);
-        }
-        return string.Empty; // Return an empty string if partOne is not at the start of partTwo
+        // Update RecognizedText when the user types in the textarea
+        RecognizedText = e.Value?.ToString() ?? string.Empty;
     }
-
 
     private async void OnSpeechRecognized(object sender, SpeechRecognitionEventArgs args)
     {
-
-        if (isTyping || isFocused) return;  // Prevent speech recognition from updating while the user is typing
+        if (isTyping || isFocused) return; // Prevent speech recognition from updating while typing
 
         var interimText = string.Empty;
 
@@ -128,20 +119,18 @@
         {
             if (args.Results[i].IsFinal)
             {
-                // Append final speech input to speech buffer (preserving previous speech input)
+                // Append finalized speech input
                 RecognizedText += args.Results[i].Items[0].Transcript + " ";
-                interimResults = null; // Clear interim results once finalized
+                interimResults = null; // Clear interim results
             }
             else
             {
-                // Add interim speech results to interimText
+                // Store interim results
                 interimText += args.Results[i].Items[0].Transcript + " ";
             }
         }
 
-        // Update interimResults without clearing prematurely
         interimResults = interimText.Trim();
-
         StateHasChanged();
     }
 
@@ -172,8 +161,4 @@
             StateHasChanged();
         }
     }
-
-
-
-
 }
