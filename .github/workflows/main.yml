@@ -28,6 +28,10 @@ jobs:
     # Add .nojekyll file to tell GitHub Pages to not treat this as a Jekyll project. (Allow files and folders starting with an underscore)
     - name: Add .nojekyll file
       run: touch release/wwwroot/.nojekyll
+
+    - name: Change base-tag in index.html from / to GuardianWasm
+      run: sed -i 's/<base href="\/" \/>/<base href="\/GuardianWasm\/" \/>/g' release/wwwroot/index.html
+
     
     #Publish static files to Github pages
     - name: Commit wwwroot to GitHub Pages
