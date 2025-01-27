@@ -29,7 +29,7 @@ jobs:
     - name: Add .nojekyll file
       run: touch release/wwwroot/.nojekyll
 
-    - name: Change base-tag in index.html from / to WebPortfolio
+    - name: Change base-tag in index.html from / to GuardianWasm
       run: sed -i 's/<base href="\/" \/>/<base href="\/GuardianWasm\/" \/>/g' release/wwwroot/index.html
 
     
