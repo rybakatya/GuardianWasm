@@ -260,7 +260,7 @@ OnOptionSelected="@((value) => greetedMember = value)"
 
 <div class="block">
 	<input id="search" type="text" @bind=searchText />
-	<button onclick="openResearchLinks" >Search Central Point</button>
+	<button @onclick="OpenResearchLink" >Search Central Point</button>
 </div>
 
 
@@ -455,5 +455,10 @@ else if(showError == true)
 		}
 		await JSRuntime.InvokeVoidAsync("clipboardCopy.copyText", notes);
 
+	}
+
+	private async void OpenResearchLink()
+	{
+		await JSRuntime.InvokeVoidAsync("openResearchLinks", searchText);
 	}
 }
