@@ -121,14 +121,17 @@ html[b-s6msh5ur3b], body[b-s6msh5ur3b] {
     display: inline-block;
 }
 
-.button[b-e0agl8ug4o] {
-    margin-left: 2.5%;
 
-}
+
 
 .textStyle[b-e0agl8ug4o] {
     color: #B2B0BF;
     font-weight: 700;
     font-size: 18px;
     border: none;
+}
+
+.block[b-e0agl8ug4o] {
+    margin-bottom:15px;
+
 }
